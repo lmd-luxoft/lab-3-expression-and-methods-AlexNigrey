@@ -8,9 +8,9 @@ namespace XO
 {
     class Program
     {
-       static char win = '-';
-       static string PlayerName1, PlayerName2;
-       static char[] cells = new char[]{ '-', '-', '-', '-', '-', '-', '-', '-', '-' };
+        static char win = '-';
+        static string[] PlayerName;
+        static char[] cells = new char[] { '-', '-', '-', '-', '-', '-', '-', '-', '-' };
 
         static void show_cells()
         {
@@ -24,14 +24,13 @@ namespace XO
             Console.WriteLine("Текущая ситуация (---пустой):");
             Console.WriteLine($"-{cells[0]}-|-{cells[1]}-|-{cells[2]}-");
             Console.WriteLine($"-{cells[3]}-|-{cells[4]}-|-{cells[5]}-");
-            Console.WriteLine($"-{cells[6]}-|-{cells[7]}-|-{cells[8]}-");        
+            Console.WriteLine($"-{cells[6]}-|-{cells[7]}-|-{cells[8]}-");
         }
         static void make_move(int num)
         {
             string raw_cell;
             int cell;
-            if (num == 1) Console.Write(PlayerName1);
-            else Console.Write(PlayerName2);
+            Console.Write(PlayerName[num]);
             do
             {
                 Console.Write(",введите номер ячейки,сделайте свой ход:");
@@ -49,29 +48,29 @@ namespace XO
                 while (!Int32.TryParse(raw_cell, out cell));
                 Console.WriteLine();
             }
-            if (num == 1) cells[cell - 1] = 'X';
-            else cells[cell - 1] = 'O';
-            
+            cells[cell - 1] = (num == 0) ? 'X' : 'O';
         }
         static char check()
         {
             for (int i = 0; i < 3; i++)
-                if (cells[i * 3] == cells[i * 3 + 1] && cells[i * 3 + 1] == cells[i * 3 + 2])
-                    return cells[i];
-                else if (cells[i] == cells[i + 3] && cells[i + 3] == cells[i + 6])
-                    return cells[i];
-                else if ((cells[2] == cells[4] && cells[4] == cells[6]) || (cells[0] == cells[4] && cells[4] == cells[8]))
+                if (IsCheck(i))
                     return cells[i];
             return '-';
         }
 
+        static bool IsCheck(int i)
+        {
+            return ((cells[2] == cells[4] && cells[4] == cells[6]) || (cells[0] == cells[4] && cells[4] == cells[8])) ||
+                (cells[i * 3] == cells[i * 3 + 1] && cells[i * 3 + 1] == cells[i * 3 + 2]) ||
+                (cells[i] == cells[i + 3] && cells[i + 3] == cells[i + 6]);
+        }
+
         static void result()
         {
-            if (win == 'X')
-                Console.WriteLine($"{PlayerName1} вы  выиграли поздравляем {PlayerName2} а вы проиграли...");
-            else if (win == 'O')
-                Console.WriteLine($"{PlayerName2} вы  выиграли поздравляем {PlayerName1} а вы проиграли...");
+            var result = (win == 'X') ? $"{PlayerName[0]} вы  выиграли поздравляем {PlayerName[1]} а вы проиграли..." :
+                $"{PlayerName[1]} вы  выиграли поздравляем {PlayerName[0]} а вы проиграли...";
 
+            Console.WriteLine(result);
         }
 
         static void Main(string[] args)
@@ -79,29 +78,22 @@ namespace XO
             do
             {
                 Console.Write("Введите имя первого игрока : ");
-                PlayerName1 = Console.ReadLine();
+                PlayerName[0] = Console.ReadLine();
 
                 Console.Write("Введите имя второго игрока: ");
-                PlayerName2 = Console.ReadLine();
+                PlayerName[1] = Console.ReadLine();
                 Console.WriteLine();
-            } while (PlayerName1 == PlayerName2);
+            } while (PlayerName[0] == PlayerName[1]);
 
             show_cells();
 
             for (int move = 1; move <= 9; move++)
             {
-                if (move % 2 != 0) make_move(1);
-                else make_move(2);
-
+                make_move(move % 2);
                 show_cells();
 
-                if (move >= 5)
-                {
-                    win = check();
-                    if (win != '-')
-                        break;
-                }
-
+                if (move >= 5 && check() != '-')
+                    break;
             }
 
             result();
