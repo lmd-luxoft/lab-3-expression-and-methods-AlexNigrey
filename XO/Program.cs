@@ -58,12 +58,13 @@ namespace XO
             return '-';
         }
 
-        static bool IsCheck(int i)
-        {
-            return ((cells[2] == cells[4] && cells[4] == cells[6]) || (cells[0] == cells[4] && cells[4] == cells[8])) ||
-                (cells[i * 3] == cells[i * 3 + 1] && cells[i * 3 + 1] == cells[i * 3 + 2]) ||
-                (cells[i] == cells[i + 3] && cells[i + 3] == cells[i + 6]);
-        }
+        static bool IsCheck(int i) => IsDiagonalCheck() || IsHorizontalCheck(i) || IsVarticalCheck(i);
+
+        static bool IsDiagonalCheck() => (cells[2] == cells[4] && cells[4] == cells[6]) || (cells[0] == cells[4] && cells[4] == cells[8]);
+
+        static bool IsHorizontalCheck(int i) => cells[i * 3] == cells[i * 3 + 1] && cells[i * 3 + 1] == cells[i * 3 + 2];
+
+        static bool IsVarticalCheck(int i) => cells[i] == cells[i + 3] && cells[i + 3] == cells[i + 6];
 
         static void result()
         {
